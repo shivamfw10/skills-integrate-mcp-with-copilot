@@ -105,9 +105,16 @@ def signup_for_activity(activity_name: str, email: str):
             detail="Student is already signed up"
         )
 
+    # Check if activity is at maximum capacity
+    if len(activity["participants"]) >= activity["max_participants"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Activity is at maximum capacity"
+        )
+
     # Add student
     activity["participants"].append(email)
-    return {"message": f"Signed up {email} for {activity_name}"}
+    return {"message": f"Successfully signed up {email} for {activity_name}"}
 
 
 @app.delete("/activities/{activity_name}/unregister")
@@ -130,3 +137,8 @@ def unregister_from_activity(activity_name: str, email: str):
     # Remove student
     activity["participants"].remove(email)
     return {"message": f"Unregistered {email} from {activity_name}"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
